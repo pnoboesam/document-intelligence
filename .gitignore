@@ -11,3 +11,4 @@ wheels/
 
 .env
 notebooks/
+evaluation_results/

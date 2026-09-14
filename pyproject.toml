@@ -5,6 +5,11 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "datasets>=5.0.1",
     "icecream>=2.2.0",
+    "openai>=3.13.0",
+    "pillow>=12.3.0",
     "pydantic>=2.13.5",
+    "pytesseract>=0.3.13",
+    "python-dotenv>=1.2.3",
 ]
