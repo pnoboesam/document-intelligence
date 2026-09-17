@@ -5,11 +5,11 @@ from pathlib import Path
 
 from datasets import load_dataset
 
-from ocr.tesseract import TesseractOCR
-from extraction.llm import LLMExtractor
-from pipeline.document import DocumentPipeline
+from src.ocr.tesseract import TesseractOCR
+from src.extraction.llm import LLMExtractor
+from src.pipeline.document import DocumentPipeline
 
-from evaluation.metrics import (
+from src.evaluation.metrics import (
     FIELDS,
     evaluate_receipt,
 )
@@ -216,9 +216,12 @@ def main():
 
                 image.save(image_path)
 
-                prediction = pipeline.process(
+                pipeline_result = pipeline.process(
                     str(image_path)
                 )
+
+                prediction = pipeline_result.receipt
+                ocr_result = pipeline_result.ocr_result
 
             elapsed = (
                 time.perf_counter()
@@ -234,6 +237,15 @@ def main():
                 "key": key,
                 "status": "success",
                 "latency_seconds": elapsed,
+
+                "ocr": {
+                    "method": ocr_result.ocr_method,
+                    "word_count": ocr_result.word_count,
+                    "average_confidence": (
+                        ocr_result.average_confidence
+                    ),
+                },
+
                 "prediction": prediction.model_dump(),
                 "ground_truth": ground_truth,
                 "metrics": metrics,

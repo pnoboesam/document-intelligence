@@ -20,14 +20,18 @@ def main():
         extractor=extractor
     )
     
-    receipt = pipeline.process(IMAGE_PATH)
+    result = pipeline.process(IMAGE_PATH)
 
-    # 3. Structured result
+    print("\n--- OCR ---")
+    print(f"Method: {result.ocr_result.ocr_method}")
+    print(f"Words: {result.ocr_result.word_count}")
+    print(f"Average confidence: {result.ocr_result.average_confidence:.3f}")
+
     print("\n--- EXTRACTED RECEIPT ---")
-    print(receipt)
+    print(result.receipt)
 
     print("\n--- JSON ---")
-    print(receipt.model_dump_json(indent=2))
+    print(result.receipt.model_dump_json(indent=2))
 
 
 if __name__ == "__main__":

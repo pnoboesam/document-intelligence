@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 
 import os
 
-from schemas.receipt import Receipt
+from src.schemas.receipt import Receipt
 
 
 load_dotenv()

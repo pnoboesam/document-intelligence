@@ -1,8 +1,15 @@
 from dataclasses import dataclass
 
-from ocr.tesseract import TesseractOCR
-from extraction.llm import LLMExtractor
-from schemas.receipt import Receipt
+from src.ocr.tesseract import TesseractOCR
+from src.extraction.llm import LLMExtractor
+from src.schemas.receipt import Receipt
+from src.ocr.base import OCRResult
+
+
+@dataclass
+class PipelineResult:
+    receipt: Receipt
+    ocr_result: OCRResult
 
 
 @dataclass
@@ -10,14 +17,18 @@ class DocumentPipeline:
     ocr: TesseractOCR
     extractor: LLMExtractor
 
-    def process(self, image_path: str) -> Receipt:
-        # Step 1: OCR
+    def process(self, image_path: str) -> PipelineResult:
+
+        # OCR
         ocr_result = self.ocr.extract(image_path)
 
-        # Step 2: Extract structured information
+        # Extract structured information from OCR text
         receipt = self.extractor.extract(
             ocr_text=ocr_result.text
         )
 
-        # Step 3: Return validated structured data
-        return receipt
+        # Return both results
+        return PipelineResult(
+            receipt=receipt,
+            ocr_result=ocr_result,
+        )
