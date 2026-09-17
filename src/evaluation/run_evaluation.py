@@ -14,10 +14,11 @@ from src.evaluation.metrics import (
     evaluate_receipt,
 )
 
-
+SPLIT = "test"
 MODEL = "openai/gpt-5.6-luna"
+DATASET_NAME = "jsdnrs/ICDAR2019-SROIE"
 
-NUM_SAMPLES = 361
+NUM_SAMPLES = 1
 
 RESULTS_DIR = Path("evaluation_results")
 
@@ -133,19 +134,18 @@ def main():
     print("Loading SROIE dataset...")
 
     dataset = load_dataset(
-        "jsdnrs/ICDAR2019-SROIE"
+        DATASET_NAME,
+        split=SPLIT,
     )
-
-    test_dataset = dataset["test"]
 
     total_samples = min(
         NUM_SAMPLES,
-        len(test_dataset),
+        len(dataset),
     )
 
     print(
         f"Test samples available: "
-        f"{len(test_dataset)}"
+        f"{len(dataset)}"
     )
 
     print(
@@ -188,7 +188,7 @@ def main():
 
     for index in range(total_samples):
 
-        example = test_dataset[index]
+        example = dataset[index]
 
         key = example["key"]
 
