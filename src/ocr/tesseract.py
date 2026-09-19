@@ -1,5 +1,6 @@
 from PIL import Image
 
+import os
 import cv2
 import numpy as np
 import pytesseract
@@ -8,8 +9,7 @@ from pytesseract import Output
 from .base import OCRResult, OCRWord, OCREngine
 
 
-PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-
+PATH = os.getenv("TESSERACT_CMD", "tesseract")
 
 class TesseractOCR(OCREngine):
 
