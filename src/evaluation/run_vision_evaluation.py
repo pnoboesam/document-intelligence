@@ -1,6 +1,7 @@
 import json
-import tempfile
 import time
+import tempfile
+import traceback
 from pathlib import Path
 
 from datasets import load_dataset
@@ -19,6 +20,8 @@ MODEL = "openai/gpt-5.6-luna"
 DATASET_NAME = "jsdnrs/ICDAR2019-SROIE"
 
 NUM_SAMPLES = 361
+MAX_RETRIES = 3
+
 
 RESULTS_DIR = Path(
     "evaluation_results/vision_results"
@@ -35,9 +38,10 @@ REPORT_FILE = (
 
 def load_completed_keys() -> set[str]:
     """
-    Load receipt IDs that have already been processed.
+    Load receipt IDs that were successfully processed.
 
-    This allows the evaluation to resume if it is interrupted.
+    Failed samples are intentionally excluded so they
+    can be retried on the next evaluation run.
     """
 
     if not PREDICTIONS_FILE.exists():
@@ -57,9 +61,10 @@ def load_completed_keys() -> set[str]:
 
             record = json.loads(line)
 
-            completed.add(
-                record["key"]
-            )
+            if record.get("status") == "success":
+                completed.add(
+                    record["key"]
+                )
 
     return completed
 
@@ -250,15 +255,23 @@ def main():
                 # --------------------------------------
                 # Vision inference
                 # --------------------------------------
+                prediction = None
 
-                prediction = pipeline.process(
-                    str(image_path)
-                )
+                for attempt in range(1, MAX_RETRIES + 1):
 
-            elapsed = (
-                time.perf_counter()
-                - start_time
-            )
+                    try:
+                        prediction = pipeline.process(str(image_path))
+                        break
+
+                    except Exception as exc:
+                        print(f"Attempt {attempt}/{MAX_RETRIES} failed: {exc}")
+
+                        if attempt == MAX_RETRIES:
+                            raise
+
+                        time.sleep(2 ** attempt)
+
+            elapsed = (time.perf_counter() - start_time)
 
             # ------------------------------------------
             # Calculate metrics
@@ -318,6 +331,7 @@ def main():
                 "status": "error",
                 "latency_seconds": elapsed,
                 "error": str(exc),
+                "traceback": traceback.format_exc(),
             }
 
             save_result(record)
@@ -330,7 +344,7 @@ def main():
             )
 
             print(
-                f"Error: {exc}"
+                traceback.format_exc()
             )
 
     # --------------------------------------------------
