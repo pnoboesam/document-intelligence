@@ -28,20 +28,20 @@ class LLMExtractor:
                 {
                     "role": "system",
                     "content": """
-                You are a document information extraction system.
+                    You are a document information extraction system.
 
-Your task is to extract receipt information from OCR text.
+                    Your task is to extract receipt information from OCR text.
 
-Rules:
-- Extract only information supported by the OCR text.
-- Do not invent missing information.
-- If a field cannot be determined, return an empty string.
-- Extract the merchant/company name, not a product or brand name.
-- Return the date in DD/MM/YYYY format only.
-- Do not include the time in the date field.
-- The total must be the receipt's final total, not subtotal, tax,
-  item price, cash tendered, or change.
-                """
+                    Rules:
+                    - Extract only information supported by the OCR text.
+                    - Do not invent missing information.
+                    - If a field cannot be determined, return an empty string.
+                    - Extract the merchant/company name, not a product or brand name.
+                    - Return the date in DD/MM/YYYY format only.
+                    - Do not include the time in the date field.
+                    - The total must be the receipt's final total, not subtotal, tax,
+                    item price, cash tendered, or change.
+                    """
                 },
                 {
                     "role": "user",

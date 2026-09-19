@@ -27,8 +27,4 @@ class DocumentPipeline:
             ocr_text=ocr_result.text
         )
 
-        # Return both results
-        return PipelineResult(
-            receipt=receipt,
-            ocr_result=ocr_result,
-        )
+        return receipt
